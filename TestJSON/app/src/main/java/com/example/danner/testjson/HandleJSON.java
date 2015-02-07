@@ -1,112 +1,71 @@
 package com.example.danner.testjson;
 
-import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.StringWriter;
-import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
-import org.xmlpull.v1.XmlPullParser;
-import org.xmlpull.v1.XmlPullParserFactory;
 
-import android.annotation.SuppressLint;
+import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
+import android.widget.ArrayAdapter;
+import android.widget.ListAdapter;
 
 public class HandleJSON {
-    private String country = "county";
-    private String temperature = "temperature";
-    private String humidity = "humidity";
-    private String pressure = "pressure";
-    private String text = "text";
-    private String date = "date";
-    private String urlString = null;
+    private String texts[] = new String[20];
+    private String dates[] = new String[20];
+    private String urlString = "https://api.vk.com/method/wall.get?owner_id=-30617342";
+    ActionBarActivity mActivity;
 
     public volatile boolean parsingComplete = true;
 
-    public HandleJSON(String url) {
-        this.urlString = url;
-    }
+    public HandleJSON(ActionBarActivity activity) {
 
-    public String getCountry() {
-        return country;
-    }
+        Log.d(MainActivity.myLogs, "HandleJSON starts, activity: " + activity);
 
-    public String getTemperature() {
-        return temperature;
-    }
+        this.mActivity = activity;
 
-    public String getHumidity() {
-        return humidity;
-    }
-
-    public String getPressure() {
-        return pressure;
-    }
-
-    public String getText() {
-        return text;
-    }
-
-    public String getDate() {
-        return date;
-    }
-
-    @SuppressLint("NewApi")
-    public void readAndParseJSON(String in) {
-        try {
-            JSONObject reader = new JSONObject(in);
-
-            JSONObject sys = reader.getJSONObject("sys");
-            country = sys.getString("country");
-
-            JSONObject main = reader.getJSONObject("main");
-            temperature = main.getString("temp");
-
-            pressure = main.getString("pressure");
-            humidity = main.getString("humidity");
-
-            parsingComplete = false;
-
-
-        } catch (Exception e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
+        Log.d(MainActivity.myLogs, "HandleJSON finish, mActivity: " + this.mActivity);
 
     }
 
-    @SuppressLint("NewApi")
+    public ListAdapter getVKListAdapter() {
+
+        Log.d(MainActivity.myLogs, "getVKListAdapter starts, texts: " + texts + ", texts[1]: " + texts[1]);
+
+        ListAdapter mVKListAdapter = new ArrayAdapter<String>(mActivity,
+                android.R.layout.simple_list_item_1, android.R.id.text1, texts);
+
+        Log.d(MainActivity.myLogs, "mVKListAdapter: " + mVKListAdapter);
+
+        return mVKListAdapter;
+    }
+
     public void readAndParseVK(String in) {
         try {
+
+            Log.d(MainActivity.myLogs, "readAndParseVK starts, in: " + in);
+
             JSONObject reader = new JSONObject(in);
 
-            Log.v("myLogs", "reader: " + reader);
+            Log.d(MainActivity.myLogs, "reader: " + reader);
 
             JSONArray response = reader.getJSONArray("response");
 
-            Log.v("myLogs", "response: " + response);
+            Log.d(MainActivity.myLogs, "response: " + response);
 
-            JSONObject pages = response.getJSONObject(1);
+            for (int i = 1; i < 4; i++) {
+                JSONObject JSONpage = response.getJSONObject(i);
+                texts[i] = JSONpage.getString("text");
+                dates[i] = JSONpage.getString("date");
+            }
 
-            Log.v("myLogs", "pages: " + pages);
-
-            text = pages.getString("text");
-
-            Log.v("myLogs", "text: " + text);
-
-            date = pages.getString("date");
-
-            Log.v("myLogs", "date: " + date);
+            Log.d(MainActivity.myLogs, "texts: " + texts + ", texts[1]: " + texts[1]);
 
             parsingComplete = false;
 
+            Log.d(MainActivity.myLogs, "readAndParseVK finish, parsingComplete: " + parsingComplete);
 
         } catch (Exception e) {
             // TODO Auto-generated catch block
@@ -116,33 +75,37 @@ public class HandleJSON {
     }
 
     public void fetchJSON() {
-        Thread thread = new Thread(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    URL url = new URL(urlString);
-                    HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-                    conn.setReadTimeout(10000 /* milliseconds */);
-                    conn.setConnectTimeout(15000 /* milliseconds */);
-                    conn.setRequestMethod("GET");
-                    conn.setDoInput(true);
-                    // Starts the query
-                    conn.connect();
-                    InputStream stream = conn.getInputStream();
+        try {
 
-                    String data = convertStreamToString(stream);
+            Log.d(MainActivity.myLogs, "fetchJSON starts");
 
-                    readAndParseVK(data);
-                    stream.close();
+            URL url = new URL(urlString);
+            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+            conn.setReadTimeout(10000 /* milliseconds */);
+            conn.setConnectTimeout(15000 /* milliseconds */);
+            conn.setRequestMethod("GET");
+            conn.setDoInput(true);
+            // Starts the query
+            conn.connect();
+            InputStream stream = conn.getInputStream();
 
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
-        });
+            String data = convertStreamToString(stream);
 
-        thread.start();
+            Log.d(MainActivity.myLogs, "convertStreamToString(stream), data: " + data);
+
+            readAndParseVK(data);
+
+            Log.d(MainActivity.myLogs, "readAndParseVK");
+
+            stream.close();
+
+            Log.d(MainActivity.myLogs, "stream.close");
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
+
 
     static String convertStreamToString(java.io.InputStream is) {
         java.util.Scanner s = new java.util.Scanner(is).useDelimiter("\\A");
