@@ -1,10 +1,20 @@
 package com.example.danner.testjson;
 
+import android.content.Context;
 import android.os.AsyncTask;
 import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.BaseAdapter;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ListAdapter;
+import android.widget.RelativeLayout;
+import android.widget.SimpleAdapter;
+import android.widget.TextView;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -13,19 +23,23 @@ import java.io.BufferedInputStream;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.HashMap;
 
 /**
  * Created by danner on 07.02.2015.
  */
-public class AsyncHandleJSON extends AsyncTask<ActionBarActivity, Integer, ListAdapter> {
+public class AsyncHandleJSON extends AsyncTask<ActionBarActivity, Integer, SimpleAdapter> {
     private String texts[] = new String[19];
     private String dates[] = new String[19];
     private MainActivity mMainActivity;
     private String urlString = "http://api.vk.com/method/wall.get?owner_id=-30617342";
 
     @Override
-    protected ListAdapter doInBackground(ActionBarActivity... params) {
+    protected SimpleAdapter doInBackground(ActionBarActivity... params) {
         ListAdapter mVKListAdapter = null;
+
+        SimpleAdapter mVKSimpleAdapter = null;
 
         mMainActivity = (MainActivity) params[0];
 
@@ -76,12 +90,26 @@ public class AsyncHandleJSON extends AsyncTask<ActionBarActivity, Integer, ListA
             }
 
             for (int i = 0; i < texts.length; i++) {
-                JSONObject JSONpage = response.getJSONObject(i+2);
+                JSONObject JSONpage = response.getJSONObject(i + 2);
                 texts[i] = JSONpage.getString("text");
                 dates[i] = JSONpage.getString("date");
             }
 
             Log.d(MainActivity.myLogs, "texts: " + texts + ", texts[0]: " + texts[0]);
+
+            ArrayList<HashMap<String, String>> myArrList = new ArrayList<HashMap<String, String>>();
+            HashMap<String, String> map;
+
+            for (int i = 0; i < texts.length; i++) {
+                map = new HashMap<String, String>();
+                map.put("date", dates[i]);
+                map.put("text", texts[i]);
+                myArrList.add(map);
+            }
+
+            mVKSimpleAdapter = new SimpleAdapter(mMainActivity.getApplicationContext(), myArrList, R.layout.fragment_vk_news_item_list,
+                    new String[] {"date", "text"},
+                    new int[] {R.id.textTitle, R.id.textContent});
 
             mVKListAdapter = new ArrayAdapter<String>(mMainActivity,
                     android.R.layout.simple_list_item_1, android.R.id.text1, texts);
@@ -100,11 +128,11 @@ public class AsyncHandleJSON extends AsyncTask<ActionBarActivity, Integer, ListA
             e.printStackTrace();
         }
 
-        return mVKListAdapter;
+        return mVKSimpleAdapter;
     }
 
     @Override
-    protected void onPostExecute(ListAdapter listAdapter) {
+    protected void onPostExecute(SimpleAdapter listAdapter) {
 
         Log.d(MainActivity.myLogs, "onPostExecute, listAdapter: " + listAdapter);
 
