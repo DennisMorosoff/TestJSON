@@ -8,8 +8,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:padding="16dp"
-        android:background="#FCE4EC"
-        >
+        android:background="#FCE4EC">
 
         <ImageView
             android:layout_width="wrap_content"
@@ -24,8 +23,18 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
             android:paddingLeft="16dp"
+            android:textColor="#212121"
             android:text="@string/some_caption"
             android:id="@+id/textTitle" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:paddingLeft="16dp"
+            android:textColor="#212121"
+            android:text="@string/some_date"
+            android:id="@+id/dateTitle" />
 
     </TableRow>
 
@@ -48,6 +57,14 @@
         <ImageView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:src="@drawable/ic_action_event"
             android:id="@+id/imageContent" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="#212121"
+            android:text="@string/some_img_desc"
+            android:id="@+id/imageDesc" />
     </LinearLayout>
 </TableLayout>

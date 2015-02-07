@@ -32,12 +32,13 @@ import java.util.HashMap;
 public class AsyncHandleJSON extends AsyncTask<ActionBarActivity, Integer, SimpleAdapter> {
     private String texts[] = new String[19];
     private String dates[] = new String[19];
+    private String photos[] = new String[19];
+    private String titles[] = new String[19];
     private MainActivity mMainActivity;
     private String urlString = "http://api.vk.com/method/wall.get?owner_id=-30617342";
 
     @Override
     protected SimpleAdapter doInBackground(ActionBarActivity... params) {
-        ListAdapter mVKListAdapter = null;
 
         SimpleAdapter mVKSimpleAdapter = null;
 
@@ -64,7 +65,6 @@ public class AsyncHandleJSON extends AsyncTask<ActionBarActivity, Integer, Simpl
             conn.setRequestMethod("GET");
             Log.d(MainActivity.myLogs, "3");
             conn.setDoInput(true);
-//            conn.connect();
 
             Log.d(MainActivity.myLogs, "conn.connect finish, conn.getResponseCode: " + conn.getResponseCode());
 
@@ -87,34 +87,57 @@ public class AsyncHandleJSON extends AsyncTask<ActionBarActivity, Integer, Simpl
             for (int i = 0; i < texts.length; i++) {
                 texts[i] = " ";
                 dates[i] = " ";
+                photos[i] = " ";
+                titles[i] = " ";
             }
 
             for (int i = 0; i < texts.length; i++) {
                 JSONObject JSONpage = response.getJSONObject(i + 2);
                 texts[i] = JSONpage.getString("text");
                 dates[i] = JSONpage.getString("date");
+
+                if (JSONpage.has("attachment")) {
+                    JSONObject JSONpageAttachment = JSONpage.getJSONObject("attachment");
+
+                    if (JSONpageAttachment.getString("type").equals("photo")) {
+                        JSONObject JSONpagePhoto = JSONpageAttachment.getJSONObject("photo");
+                        if (JSONpagePhoto.has("src")) {
+                            photos[i] = JSONpagePhoto.getString("src");
+                        }
+                    }
+                    if (JSONpageAttachment.getString("type").equals("link")) {
+                        JSONObject JSONpageLink = JSONpageAttachment.getJSONObject("link");
+                        if (JSONpageLink.has("title")) {
+                            titles[i] = JSONpageLink.getString("title");
+                        }
+                    }
+                }
             }
 
-            Log.d(MainActivity.myLogs, "texts: " + texts + ", texts[0]: " + texts[0]);
+            Log.d(MainActivity.myLogs, "Массивы заполнены");
 
             ArrayList<HashMap<String, String>> myArrList = new ArrayList<HashMap<String, String>>();
             HashMap<String, String> map;
 
+            Log.d(MainActivity.myLogs, "myArrList: " + myArrList);
+
             for (int i = 0; i < texts.length; i++) {
                 map = new HashMap<String, String>();
+                map.put("title", titles[i]);
                 map.put("date", dates[i]);
                 map.put("text", texts[i]);
+                map.put("image", photos[i]);
+
+                Log.d(MainActivity.myLogs, "map: " + map + ", i = " + i);
+
                 myArrList.add(map);
             }
 
             mVKSimpleAdapter = new SimpleAdapter(mMainActivity.getApplicationContext(), myArrList, R.layout.fragment_vk_news_item_list,
-                    new String[] {"date", "text"},
-                    new int[] {R.id.textTitle, R.id.textContent});
+                    new String[]{"title", "date", "text", "image"},
+                    new int[]{R.id.textTitle, R.id.dateTitle, R.id.textContent, R.id.imageDesc});
 
-            mVKListAdapter = new ArrayAdapter<String>(mMainActivity,
-                    android.R.layout.simple_list_item_1, android.R.id.text1, texts);
-
-            Log.d(MainActivity.myLogs, "mVKListAdapter: " + mVKListAdapter);
+            Log.d(MainActivity.myLogs, "mVKSimpleAdapter: " + mVKSimpleAdapter);
 
             stream.close();
 
