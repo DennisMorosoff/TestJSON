@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingBottom="16dp">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:padding="16dp"
+        android:textColor="#212121"
+        android:background="#FCE4EC"
+        android:text="@string/some_caption"
+        android:id="@+id/textShedTitle" />
+
+    <TableRow
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="#E8EAF6"
+        android:padding="16dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:linksClickable="true"
+            android:textColor="#212121"
+            android:layout_gravity="center|left"
+            android:text="@string/some_text"
+            android:id="@+id/textShedTime" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:linksClickable="true"
+            android:textColor="#212121"
+            android:text="@string/some_text"
+            android:layout_gravity="center"
+            android:id="@+id/textShedLecturer" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="#212121"
+            android:layout_gravity="center|right"
+            android:text="@string/some_date"
+            android:id="@+id/textShedRoom" />
+    </TableRow>
+
+</TableLayout>

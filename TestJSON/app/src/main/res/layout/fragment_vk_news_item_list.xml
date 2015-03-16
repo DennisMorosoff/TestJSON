@@ -27,15 +27,6 @@
             android:text="@string/some_caption"
             android:id="@+id/textTitle" />
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical"
-            android:paddingLeft="16dp"
-            android:textColor="#212121"
-            android:text="@string/some_date"
-            android:id="@+id/dateTitle" />
-
     </TableRow>
 
     <LinearLayout
@@ -57,14 +48,31 @@
         <ImageView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:src="@drawable/ic_action_event"
             android:id="@+id/imageContent" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textColor="#212121"
-            android:text="@string/some_img_desc"
-            android:id="@+id/imageDesc" />
+            android:layout_gravity="bottom|right"
+            android:text="@string/some_date"
+            android:id="@+id/dateTitle" />
     </LinearLayout>
+
+    <TableRow
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:visibility="gone"
+            android:id="@+id/imgTitle" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:visibility="gone"
+            android:id="@+id/imgContext" />
+    </TableRow>
 </TableLayout>
